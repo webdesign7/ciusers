@@ -12,17 +12,23 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 class UserController extends BaseController
 {
     /**
+     * @var UserModel
+     */
+    private $userModel;
+
+    public function __construct() {
+        $this->userModel = model(UserModel::class);
+    }
+
+    /**
      * Display a list of all available users
      */
     public function index()
     {
-        helper(['html','url']);
-
-        /** @var UserModel $model */
-        $model = model(UserModel::class);
+        helper(['html', 'url']);
 
         echo view('user/index', [
-            'users' => $model->findAll()
+            'users' => $this->userModel->findAll()
         ]);
     }
 
@@ -45,41 +51,20 @@ class UserController extends BaseController
     {
         helper(['form']);
 
-        /** @var UserModel $model */
-        $model = model(UserModel::class);
+        $postData = $this->request->getPost();
 
-        $data = [
-            'first_name' => $this->request->getVar('first_name'),
-            'last_name' => $this->request->getVar('last_name'),
-            'email'  => $this->request->getVar('email'),
-            'password'  => $this->request->getVar('password'),
-        ];
+        $userId = $this->userModel->insert($postData);
 
-        $rules = [
-            'first_name' => 'required|min_length[1]|max_length[64]',
-            'last_name' => 'required|min_length[1]|max_length[64]',
-            'email' => 'required|valid_email|is_unique[users.email]',
-            'password' => 'required|min_length[6]',
-        ];
-
-        if (! $this->validateData($data, $rules)) {
-            return view('user/create', [
-                'data' => $data,
-                'validation' => $this->validator
-            ]);
-        }
-
-        $userId = $model->insert($data);
-
-        if(is_int($userId)) {
+        if (is_int($userId)) {
             session()->setFlashdata('success', 'User created successfully');
             return $this->response->redirect('/');
         }
 
-        session()->setFlashdata('error', 'There was a problem inserting this user');
-        return redirect()->to(base_url('users/create'));
+        return view('user/create', [
+            'data' => $postData,
+            'errors' => $this->userModel->errors()
+        ]);
     }
-
 
     /**
      *
@@ -91,45 +76,24 @@ class UserController extends BaseController
     {
         helper(['form']);
 
-        /** @var UserModel $model */
-        $model = model(UserModel::class);
-
         $id = $this->request->getVar('id');
 
-        $data = [
-            'id' => $id,
-            'first_name' => $this->request->getVar('first_name'),
-            'last_name' => $this->request->getVar('last_name'),
-            'email'  => $this->request->getVar('email'),
-        ];
+        $postData = $this->request->getPost();
 
-        if ($this->request->getVar('password') !== '') {
-            $data['password'] = $this->request->getVar('password');
+        if ($postData['password'] === '') {
+            unset($postData['password']);
         }
 
-        $rules = [
-            'first_name' => 'required|min_length[1]|max_length[64]',
-            'last_name' => 'required|min_length[1]|max_length[64]',
-            'email' => 'required|valid_email|is_unique[users.email,id,{id}]',
-            'password' => 'permit_empty|min_length[6]',
-        ];
-
-        if (! $this->validateData($data, $rules)) {
-            return view('user/edit', [
-                'data' => $data,
-                'validation' => $this->validator
-            ]);
-        }
-
-        if($model->update($id, $data)) {
+        if ($this->userModel->update($id, $postData)) {
             session()->setFlashdata('success', 'User updated successfully');
             return $this->response->redirect('/');
         }
 
-        session()->setFlashdata('error', 'There was a problem updating this user');
-        return redirect()->to(url_to('edit_user', $id));
+        return view('user/edit', [
+            'data' => $postData,
+            'errors' => $this->userModel->errors()
+        ]);
     }
-
 
     /**
      * Remove user
@@ -139,10 +103,7 @@ class UserController extends BaseController
      */
     public function delete($id): ResponseInterface
     {
-        /** @var UserModel $model */
-        $model = model(UserModel::class);
-
-        if ($model->where('id', $id)->delete($id)) {
+        if ($this->userModel->where('id', $id)->delete($id)) {
             session()->setFlashdata('success', 'User has been successfully deleted');
             return $this->response->redirect('/');
         }
@@ -161,12 +122,9 @@ class UserController extends BaseController
     {
         helper(['form']);
 
-        /** @var UserModel $model */
-        $model = model(UserModel::class);
+        $user = $this->userModel->find($id);
 
-        $user = $model->find($id);
-
-        if (!$user){
+        if (!$user) {
             throw new ModelNotFoundException("User with id $id does not exist");
         }
 
