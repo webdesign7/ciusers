@@ -25,43 +25,45 @@
 
 <?= $this->section('extra-scripts') ?>
 
-<script>
-    if ($("#userForm").length > 0) {
-        $("#userForm").validate({
-            rules: {
-                first_name: {
-                    required: true,
+    <script>
+        if ($("#userForm").length > 0) {
+            $("#userForm").validate({
+                rules: {
+                    first_name: {
+                        required: true,
+                    },
+                    last_name: {
+                        required: true,
+                    },
+                    email: {
+                        required: true,
+                        maxlength: 60,
+                        email: true,
+                    },
+                    password: {
+                        required: true,
+                        minlength: 6,
+                    },
                 },
-                last_name: {
-                    required: true,
+                messages: {
+                    first_name: {
+                        required: "First name is required.",
+                    },
+                    last_name: {
+                        required: "Last name is required.",
+                    },
+                    password: {
+                        required: "Password is required.",
+                        minlength: "Password should not be less than 6 characters",
+                    },
+                    email: {
+                        required: "Email is required.",
+                        email: "It does not seem to be a valid email.",
+                        maxlength: "The email should be or equal to 60 chars.",
+                    },
                 },
-                email: {
-                    required: true,
-                    maxlength: 60,
-                    email: true,
-                },
-                password: {
-                    required: true,
-                },
-            },
-            messages: {
-                first_name: {
-                    required: "First name is required.",
-                },
-                last_name: {
-                    required: "Last name is required.",
-                },
-                password: {
-                    required: "Password is required.",
-                },
-                email: {
-                    required: "Email is required.",
-                    email: "It does not seem to be a valid email.",
-                    maxlength: "The email should be or equal to 60 chars.",
-                },
-            },
-        })
-    }
-</script>
+            })
+        }
+    </script>
 
 <?= $this->endSection() ?>

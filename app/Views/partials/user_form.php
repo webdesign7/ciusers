@@ -1,4 +1,16 @@
-<?= form_open($action, array('novalidate' => true, 'class' => 'needs-validation', 'id' => 'userForm' )); ?>
+<?php
+
+use Config\Services;
+
+?>
+
+<?= form_open(
+        $data['id'] ? 'users/update' : 'users/store',
+        array('novalidate' => true, 'class' => 'needs-validation', 'id' => 'userForm' )
+    );
+?>
+
+    <?php $validation = Services::validation(); ?>
 
     <div class="form-group">
         <?= form_label('First Name', 'first_name'); ?>
@@ -6,7 +18,6 @@
         <div class="invalid-feedback">Please enter a first name</div>
 
         <!-- Error -->
-        <?php $validation = \Config\Services::validation(); ?>
         <?php if($validation->getError('first_name')) {?>
             <div class='alert alert-danger mt-2'>
                 <?= $error = $validation->getError('first_name'); ?>
@@ -20,7 +31,6 @@
         <div class="invalid-feedback">Please enter a last name</div>
 
         <!-- Error -->
-        <?php $validation = \Config\Services::validation(); ?>
         <?php if($validation->getError('last_name')) {?>
             <div class='alert alert-danger mt-2'>
                 <?= $error = $validation->getError('last_name'); ?>
@@ -34,7 +44,6 @@
         <div class="invalid-feedback">Please enter a valid email address</div>
 
         <!-- Error -->
-        <?php $validation = \Config\Services::validation(); ?>
         <?php if($validation->getError('email')) {?>
             <div class='alert alert-danger mt-2'>
                 <?= $error = $validation->getError('email'); ?>
@@ -50,7 +59,6 @@
         <div class="invalid-feedback">Please enter a password with minimum 6 length</div>
 
         <!-- Error -->
-        <?php $validation = \Config\Services::validation(); ?>
         <?php if($validation->getError('password')) {?>
             <div class='alert alert-danger mt-2'>
                 <?= $error = $validation->getError('password'); ?>
@@ -60,5 +68,12 @@
 
     <?= form_hidden('id', $data['id'] ?? ''); ?>
 
-<?= form_submit('submit', 'Submit', ['class' => 'btn btn-primary']); ?>
+    <?= form_submit('submit', 'Submit', ['class' => 'btn btn-primary']); ?>
+
+    <?= form_button('submit', 'Cancel', [
+            'class' => 'btn btn-default',
+            'onclick'=>"window.location='/'"
+        ]);
+    ?>
+
 <?= form_close(); ?>

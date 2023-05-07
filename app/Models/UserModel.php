@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use CodeIgniter\Model;
@@ -54,7 +56,7 @@ class UserModel extends Model
         if (! isset($data['data']['password'])) {
             return $data;
         }
-
+        // todo add a private key for better encryption
         $data['data']['password'] = password_hash($data['data']['password'], PASSWORD_BCRYPT);
 
         return $data;

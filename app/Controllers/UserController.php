@@ -1,15 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controllers;
 
-use App\Controllers\BaseController;
 use App\Models\UserModel;
-use CodeIgniter\Exceptions\PageNotFoundException;
+use CodeIgniter\HTTP\RedirectResponse;
 use CodeIgniter\HTTP\ResponseInterface;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class UserController extends BaseController
 {
+    /**
+     * Display a list of all available users
+     */
     public function index()
     {
         helper(['html','url']);
@@ -17,21 +21,26 @@ class UserController extends BaseController
         /** @var UserModel $model */
         $model = model(UserModel::class);
 
-        $data = [
+        echo view('user/index', [
             'users' => $model->findAll()
-        ];
-        echo view('user/index', $data);
+        ]);
     }
 
-    public function create()
+    /**
+     * Page to add a new user
+     */
+    public function create(): void
     {
         helper(['form']);
-        $data = [
-            'action' => 'users/store',
-        ];
-        echo view('user/create', $data);
+        echo view('user/create');
     }
 
+    /**
+     * Add new user ( validate and save to DB )
+     *
+     * @return RedirectResponse|ResponseInterface
+     * @throws \ReflectionException
+     */
     public function store()
     {
         helper(['form']);
@@ -55,7 +64,6 @@ class UserController extends BaseController
 
         if (! $this->validateData($data, $rules)) {
             return view('user/create', [
-                'action' => 'users/store',
                 'data' => $data,
                 'validation' => $this->validator
             ]);
@@ -63,19 +71,22 @@ class UserController extends BaseController
 
         $userId = $model->insert($data);
 
-        $session = session();
-
         if(is_int($userId)) {
-            $session->setFlashdata('success', 'User created successfully');
+            session()->setFlashdata('success', 'User created successfully');
             return $this->response->redirect('/');
-        } else {
-            $session->setFlashdata('error', 'There was a problem inserting this user');
-            return redirect()->to(base_url('users/create'));
         }
 
+        session()->setFlashdata('error', 'There was a problem inserting this user');
+        return redirect()->to(base_url('users/create'));
     }
 
 
+    /**
+     *
+     *
+     * @return RedirectResponse|ResponseInterface
+     * @throws \ReflectionException
+     */
     public function update()
     {
         helper(['form']);
@@ -85,10 +96,8 @@ class UserController extends BaseController
 
         $id = $this->request->getVar('id');
 
-        var_dump($id);
-
         $data = [
-            'id' => $this->request->getVar('id'),
+            'id' => $id,
             'first_name' => $this->request->getVar('first_name'),
             'last_name' => $this->request->getVar('last_name'),
             'email'  => $this->request->getVar('email'),
@@ -107,26 +116,24 @@ class UserController extends BaseController
 
         if (! $this->validateData($data, $rules)) {
             return view('user/edit', [
-                'action' => 'users/update',
                 'data' => $data,
                 'validation' => $this->validator
             ]);
         }
 
-        $session = session();
-
         if($model->update($id, $data)) {
-            $session->setFlashdata('success', 'User updated successfully');
+            session()->setFlashdata('success', 'User updated successfully');
             return $this->response->redirect('/');
-        } else {
-            $session->setFlashdata('error', 'There was a problem updating this user');
-            return redirect()->to(url_to('edit_user', $id));
         }
 
+        session()->setFlashdata('error', 'There was a problem updating this user');
+        return redirect()->to(url_to('edit_user', $id));
     }
 
 
     /**
+     * Remove user
+     *
      * @param null $id
      * @return ResponseInterface
      */
@@ -146,6 +153,8 @@ class UserController extends BaseController
 
 
     /**
+     * Edit user page
+     *
      * @param $id
      */
     public function edit($id)
@@ -161,12 +170,9 @@ class UserController extends BaseController
             throw new ModelNotFoundException("User with id $id does not exist");
         }
 
-        $data = [
-            'action' => 'users/update',
+        echo view('user/edit', [
             'data' => $user
-        ];
-
-        echo view('user/edit', $data);
+        ]);
     }
 
 }

@@ -60,7 +60,7 @@
 <?php } else { ?>
 
 <h3>No Users Yet</h3>
-<p>Unable to find any news for you. Please add a new User.</p>
+<p>Unable to find any news for you. Please <a href="<?= url_to('UserController::create') ?>">add</a> a new User.</p>
 
 <?php } ?>
 
