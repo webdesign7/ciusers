@@ -8,7 +8,7 @@
 
 
 <?= form_open(
-    $data['id'] ? 'users/update' : 'users/store',
+    isset($data['id']) && !empty($data['id']) ? 'users/update' : 'users/store',
     array('novalidate' => true, 'class' => 'needs-validation', 'id' => 'userForm')
 );
 ?>

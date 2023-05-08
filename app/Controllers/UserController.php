@@ -38,7 +38,7 @@ class UserController extends BaseController
     public function create(): void
     {
         helper(['form']);
-        echo view('user/create');
+        echo view('user/create', ['data' => []]);
     }
 
     /**
