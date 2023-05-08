@@ -24,7 +24,7 @@
             "placeholder" => "eg. Bob",
             "required" => true,
         ],
-        $data["first_name"] ?? ""
+        esc($data["first_name"]) ?? ""
     ) ?>
 </div>
 
@@ -40,7 +40,7 @@
             "placeholder" => "Last name here",
             "required" => true,
         ],
-        $data["last_name"] ?? ""
+        esc($data["last_name"]) ?? ""
     ) ?>
 </div>
 
@@ -56,7 +56,7 @@
             "placeholder" => "Email address here",
             "required" => true,
         ],
-        $data["email"] ?? ""
+        esc($data["email"]) ?? ""
     ) ?>
 </div>
 
@@ -74,7 +74,7 @@
             "placeholder" => "eg. 087654234",
             "required" => true,
         ],
-        $data["mobile"] ?? ""
+        esc($data["mobile"]) ?? ""
     ) ?>
 </div>
 
@@ -91,7 +91,7 @@
             "placeholder" => "eg. superman",
             "required" => true,
         ],
-        $data["username"] ?? ""
+        esc($data["username"]) ?? ""
     ) ?>
 </div>
 
@@ -108,7 +108,7 @@
     ]) ?>
 </div>
 
-<?= form_hidden('id', $data['id'] ?? ''); ?>
+<?= form_hidden('id', esc($data['id']) ?? ''); ?>
 
 <?= form_submit('submit', 'Submit', ['class' => 'btn btn-primary']); ?>
 
