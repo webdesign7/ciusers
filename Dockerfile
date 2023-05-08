@@ -1,7 +1,5 @@
 FROM php:7.4-apache
 
-COPY LICENSE LICENSE1
-
 USER root
 
 ## Update package information
