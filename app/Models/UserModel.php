@@ -19,6 +19,8 @@ class UserModel extends Model
         'first_name',
         'last_name',
         'email',
+        'mobile',
+        'username',
         'password',
         'created_at'
     ];
@@ -34,6 +36,8 @@ class UserModel extends Model
         'first_name' => 'required|min_length[1]|max_length[64]',
         'last_name' => 'required|min_length[1]|max_length[64]',
         'email' => 'required|valid_email|is_unique[users.email,id,{id}]',
+        'mobile' => 'required|min_length[8]|max_length[11]',
+        'username' => 'required|min_length[6]|is_unique[users.username,id,{id}]',
         'password' => 'required|min_length[6]',
     ];
     protected $validationMessages   = [];
